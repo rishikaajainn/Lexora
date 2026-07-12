@@ -5,7 +5,7 @@
 .env
 
 # Chroma Database
-chroma_db/
+#chroma_db/
 
 # Python Cache
 __pycache__/
