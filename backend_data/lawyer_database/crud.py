@@ -2,28 +2,6 @@ from .database import get_connection
 
 
 def add_lawyer(
-
-    full_name,
-    email,
-    mobile_number,
-    office_address,
-    bar_council_enrolment_number,
-    state_bar_council,
-    years_of_experience,
-    primary_practice_area,
-    bar_council_id_card,
-    certificate_of_practice
-
-):
-
-    conn = get_connection()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    INSERT INTO lawyers(
-
         full_name,
         email,
         mobile_number,
@@ -33,29 +11,45 @@ def add_lawyer(
         years_of_experience,
         primary_practice_area,
         bar_council_id_card,
-        certificate_of_practice
+        certificate_of_practice,
+    ):
 
-    )
+        conn = get_connection()
 
-    VALUES(?,?,?,?,?,?,?,?,?,?)
+        try:
+            cursor = conn.cursor()
 
-    """,(
+            cursor.execute("""
+            INSERT INTO lawyers(
+                full_name,
+                email,
+                mobile_number,
+                office_address,
+                bar_council_enrolment_number,
+                state_bar_council,
+                years_of_experience,
+                primary_practice_area,
+                bar_council_id_card,
+                certificate_of_practice
+            )
+            VALUES(?,?,?,?,?,?,?,?,?,?)
+            """, (
+                full_name,
+                email,
+                mobile_number,
+                office_address,
+                bar_council_enrolment_number,
+                state_bar_council,
+                years_of_experience,
+                primary_practice_area,
+                bar_council_id_card,
+                certificate_of_practice,
+            ))
 
-        full_name,
-        email,
-        mobile_number,
-        office_address,
-        bar_council_enrolment_number,
-        state_bar_council,
-        years_of_experience,
-        primary_practice_area,
-        bar_council_id_card,
-        certificate_of_practice
+            conn.commit()
 
-    ))
-
-    conn.commit()
-    conn.close()
+        finally:
+            conn.close()
 
 def get_all_lawyers():
 

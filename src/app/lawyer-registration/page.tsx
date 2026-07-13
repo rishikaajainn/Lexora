@@ -1,6 +1,111 @@
+
+"use client";
+
+import { useState } from "react";
 import { legalCategories } from "@/constants/legalCategories";
 
 export default function LawyerRegistrationPage() {
+
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    mobile_number: "",
+    office_address: "",
+    state_bar_council: "",
+    bar_council_enrolment_number: "",
+    years_of_experience: "",
+    primary_practice_area: "",
+  });
+
+  const [files, setFiles] = useState({
+    bar_council_id_card: null as File | null,
+    certificate_of_practice: null as File | null,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setFiles({
+      ...files,
+     [e.target.name]: file,
+   });
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    const data = new FormData();
+
+    data.append("full_name", formData.full_name);
+    data.append("email", formData.email);
+    data.append("mobile_number", formData.mobile_number);
+    data.append("office_address", formData.office_address);
+    data.append("state_bar_council", formData.state_bar_council);
+    data.append(
+      "bar_council_enrolment_number",
+      formData.bar_council_enrolment_number
+    );
+    data.append(
+      "years_of_experience",
+      formData.years_of_experience
+    );
+    data.append(
+      "primary_practice_area",
+      formData.primary_practice_area
+    );
+
+    if (files.bar_council_id_card) {
+      data.append(
+        "bar_council_id_card",
+        files.bar_council_id_card
+      );
+    }
+
+    if (files.certificate_of_practice) {
+      data.append(
+        "certificate_of_practice",
+        files.certificate_of_practice
+      );
+    }
+
+    try {
+
+      const response = await fetch(
+        "http://127.0.0.1:8000/lawyers/register",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      const result = await response.json();
+
+      alert(result.message);
+
+    } catch (error) {
+
+      alert("Registration failed.");
+
+      console.error(error);
+
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-100 py-10 px-6">
 
@@ -24,7 +129,11 @@ export default function LawyerRegistrationPage() {
 
         </div>
 
-        <form className="space-y-10">
+        <form 
+          onSubmit={handleSubmit}
+          className="space-y-10"
+        >
+          
 
           {/* ================= PERSONAL INFORMATION ================= */}
 
@@ -38,54 +147,30 @@ export default function LawyerRegistrationPage() {
 
               <input
                 type="text"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
                 placeholder="Full Name"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email Address"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
               <input
                 type="tel"
+                name="mobile_number"
+                value={formData.mobile_number}
+                onChange={handleChange}
                 placeholder="Phone Number"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
-
-              <select
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              >
-                <option>Select Country</option>
-                <option>India</option>
-                <option>United States</option>
-                <option>United Kingdom</option>
-                <option>Canada</option>
-                <option>Australia</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="State"
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
-
-              <input
-                type="text"
-                placeholder="City"
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
-
-              <select
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              >
-                <option>Preferred Language</option>
-                <option>English</option>
-                <option>Hindi</option>
-                <option>German</option>
-                <option>French</option>
-              </select>
 
             </div>
 
@@ -103,113 +188,61 @@ export default function LawyerRegistrationPage() {
 
               <input
                 type="text"
+                name="state_bar_council"
+                value={formData.state_bar_council}
+                onChange={handleChange}
                 placeholder="State Bar Council"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
               <input
                 type="text"
+                name="bar_council_enrolment_number"
+                value={formData.bar_council_enrolment_number}
+                onChange={handleChange}
                 placeholder="Bar Council Enrollment Number"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
-              <input
-                type="text"
-                placeholder="Certificate of Practice Number"
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
+              
 
               <input
                 type="number"
+                name="years_of_experience"
+                value={formData.years_of_experience}
+                onChange={handleChange}
                 placeholder="Years of Experience"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
               <select
+                name="primary_practice_area"
+                value={formData.primary_practice_area}
+                onChange={handleChange}
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              >
-                <option>Select Primary Practice Area</option>
+>
+                <option value="">Select Primary Practice Area</option>
 
                 {legalCategories.map((category) => (
-                  <option key={category}>
+                  <option key={category} value={category}>
                     {category}
                   </option>
-                ))}
+               ))}
               </select>
 
               <input
                 type="text"
+                name="office_address"
+                value={formData.office_address}
+                onChange={handleChange}
                 placeholder="Office Address"
                 className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
               />
 
             </div>
-
           </section>
 
-          {/* ================= PROFESSIONAL INFORMATION ================= */}
-
-          <section>
-
-            <h2 className="text-2xl font-semibold mb-6 border-b pb-3">
-              Professional Information
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <input
-                type="number"
-                placeholder="Consultation Fee (₹)"
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
-
-              <input
-                type="text"
-                placeholder="Courts You Regularly Practice In"
-                className="border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
-
-              <textarea
-                placeholder="Professional Bio"
-                rows={5}
-                className="md:col-span-2 border rounded-xl p-4 outline-none focus:ring-2 focus:ring-blue-700"
-              />
-
-            </div>
-
-          </section>
-
-          {/* ================= LANGUAGES ================= */}
-
-          <section>
-
-            <h2 className="text-2xl font-semibold mb-6 border-b pb-3">
-              Languages Spoken
-            </h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                "English",
-                "Hindi",
-                "Marathi",
-                "Tamil",
-                "Telugu",
-                "Bengali",
-                "German",
-                "Others",
-              ].map((language) => (
-                <label
-                  key={language}
-                  className="flex items-center gap-2 border rounded-xl p-3"
-                >
-                  <input type="checkbox" />
-                  {language}
-                </label>
-              ))}
-            </div>
-
-          </section>
-
+      
           {/* ================= VERIFICATION DOCUMENTS ================= */}
 
           <section>
@@ -226,6 +259,8 @@ export default function LawyerRegistrationPage() {
                 </p>
                 <input
                   type="file"
+                  name="bar_council_id_card"
+                  onChange={handleFileChange}
                   className="mt-4"
                 />
               </div>
@@ -236,26 +271,8 @@ export default function LawyerRegistrationPage() {
                 </p>
                 <input
                   type="file"
-                  className="mt-4"
-                />
-              </div>
-
-              <div className="border-2 border-dashed rounded-2xl p-6">
-                <p className="font-semibold">
-                  Upload Government ID
-                </p>
-                <input
-                  type="file"
-                  className="mt-4"
-                />
-              </div>
-
-              <div className="border-2 border-dashed rounded-2xl p-6">
-                <p className="font-semibold">
-                  Upload Profile Photo
-                </p>
-                <input
-                  type="file"
+                  name="certificate_of_practice"
+                  onChange={handleFileChange}
                   className="mt-4"
                 />
               </div>
