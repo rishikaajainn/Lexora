@@ -2,6 +2,7 @@ from typing import Optional
 
 from src.vectorstore import VectorStore
 
+from src.pdf_links import PDF_LINKS
 
 class LegalRetriever:
 
@@ -82,14 +83,17 @@ class LegalRetriever:
 
         for doc in docs:
 
+            source = doc.metadata.get("source")
+
             results.append(
                 {
                     "text": doc.page_content,
-                    "source": doc.metadata.get("source"),
+                    "source": source,
                     "page": doc.metadata.get("page"),
                     "country": doc.metadata.get("country"),
                     "location": doc.metadata.get("location"),
                     "category": doc.metadata.get("category"),
+                    "pdf_url": PDF_LINKS.get(source),
                 }
             )
 

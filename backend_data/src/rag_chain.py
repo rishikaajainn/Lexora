@@ -121,6 +121,8 @@ class LegalRAG:
                         "page": doc["page"],
                         "category": doc["category"],
                         "location": doc["location"],
+                        "country": doc["country"],
+                        "pdf_url": doc["pdf_url"],
                     }
                 )
 
