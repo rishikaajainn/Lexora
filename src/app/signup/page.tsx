@@ -1,4 +1,77 @@
+"use client";
+
+import { useState } from "react";
+
 export default function SignupPage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    country: "",
+    language: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Submitting...", formData);
+
+    setMessage("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          country: formData.country,
+          language: formData.language,
+        }),
+      });
+      console.log(response);
+
+      const data = await response.json();
+      
+
+      console.log(data);
+
+      if (!response.ok) {
+        setMessage(data.message);
+        return;
+      }
+
+      setMessage("🎉 Account created successfully!");
+
+      setFormData({
+        fullName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        country: "",
+        language: "",
+      });
+
+    } catch (error) {
+      setMessage("Unable to connect to server.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <main className="min-h-screen bg-slate-100 flex items-center justify-center px-6">
 
@@ -20,54 +93,87 @@ export default function SignupPage() {
 
         </div>
 
-        <form className="mt-10 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-10 space-y-5">
 
           <input
             type="text"
             placeholder="Full Name"
-            className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
+            value={formData.fullName}
+            onChange={(e) =>
+              setFormData({ ...formData, fullName: e.target.value })
+            }
+            className="w-full border rounded-xl px-4 py-3"
           />
 
           <input
             type="email"
             placeholder="Email Address"
-            className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            className="w-full border rounded-xl px-4 py-3"
           />
 
           <input
             type="password"
             placeholder="Password"
-            className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            className="w-full border rounded-xl px-4 py-3"
           />
 
           <input
             type="password"
             placeholder="Confirm Password"
-            className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
+            value={formData.confirmPassword}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                confirmPassword: e.target.value,
+              })
+            }
+            className="w-full border rounded-xl px-4 py-3"
           />
 
           <select
+            value={formData.country}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                country: e.target.value,
+              })
+            }
             className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
           >
-            <option>Select Country</option>
-            <option>India</option>
-            <option>United States</option>
-            <option>United Kingdom</option>
-            <option>Canada</option>
-            <option>Australia</option>
+            <option value="">Select Country</option>
+            <option value="India">India</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Canada">Canada</option>
+            <option value="Australia">Australia</option>
           </select>
 
           <select
+            value={formData.language}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                language: e.target.value,
+              })
+            }
             className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-700 outline-none"
           >
-            <option>Preferred Language</option>
-            <option>English</option>
-            <option>Hindi</option>
-            <option>Marathi</option>
-            <option>Tamil</option>
-            <option>Telugu</option>
-            <option>Bengali</option>
-            <option>German</option>
+            <option value="">Preferred Language</option>
+            <option value="English">English</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Marathi">Marathi</option>
+            <option value="Tamil">Tamil</option>
+            <option value="Telugu">Telugu</option>
+            <option value="Bengali">Bengali</option>
+            <option value="German">German</option>
           </select>
 
           <label className="flex items-start gap-3 text-sm text-gray-600">
@@ -79,9 +185,23 @@ export default function SignupPage() {
               I agree to the Terms & Conditions and Privacy Policy.
             </span>
           </label>
-
-          <button className="w-full bg-blue-800 text-white py-4 rounded-xl hover:bg-blue-900 transition font-semibold">
-            Continue
+          {message && (
+            <p
+              className={`text-center text-sm ${
+                message.includes("successfully")
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {message}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-800 text-white py-4 rounded-xl hover:bg-blue-900 transition font-semibold disabled:opacity-50"
+          >
+            {loading ? "Creating Account..." : "Continue"}
           </button>
 
         </form>
